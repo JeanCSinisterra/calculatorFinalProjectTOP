@@ -1,13 +1,132 @@
+ // Create the variables called for the first & second operand and set it to an empty string.
+ let firstOperand = "";
+ let secondOperand = "";
+ let currentOperation = null;
+ let shouldResetScreen = false;
+
+// Call all the buttons with the DOM query Selectors
+const numberButtons = document.querySelectorAll('[data-number]')
+const operatorButtons = document.querySelectorAll('[data-operator]')
+const equalsButton = document.getElementById('equalsBtn')
+const clearButton = document.getElementById('clearBtn')
+const deleteButton = document.getElementById('deleteBtn')
+const pointButton = document.getElementById('pointBtn')
+const lastOperationScreen = document.getElementById('lastOperationScreen')
+const currentOperationScreen = document.getElementById('currentOperationScreen')
+
+// Adding the event Listeners to my buttons above
+window.addEventListener("keydown", handleKeyboardInput);
+equalsButton.addEventListener("click", evaluate);
+clearButton.addEventListener("click", clear);
+deleteButton.addEventListener("click", deleteNumber);
+pointButton.addEventListener("click", appendPoint);
+
+numberButtons.forEach((button) => 
+    button.addEventListener("click", () => 
+        appendNumber(button.textContent))
+)
+
+operatorButtons.forEach((button) =>
+    button.addEventListener("click", () => setOperation(button.textContent))
+)
+
+// Functions to handle the keyboard input
+function appendNumber(number){
+    if (currentOperationScreen.textContent === "0" || shouldResetScreen)
+        resetScreen();
+    currentOperationScreen.textContent += number;
+}
+
+function resetScreen(){
+    currentOperationScreen.textContent = "";
+    shouldResetScreen = false;
+}
+
+function clear(){ 
+    currentOperationScreen.textContent = "0";
+    lastOperationScreen.textContent = "";
+    firstOperand = "";
+    secondOperand = "";
+    currentOperation = null;
+}
+
+function appendPoint(){
+    if (shouldResetScreen)
+        resetScreen();
+    if (currentOperationScreen.textContent === "")
+        currentOperationScreen.textContent = "0";
+    if (currentOperationScreen.textContent.includes("."))
+        return;
+    currentOperationScreen.textContent += ".";
+}
+
+function deleteNumber(){
+    currentOperationScreen.textContent = currentOperationScreen.textContent.toString().slice(0, -1);
+}
+
+function setOperation(operator){
+    if (currentOperation !== null)
+        evaluate();
+    firstOperand = currentOperationScreen.textContent;
+    currentOperation = operator;
+    lastOperationScreen.textContent = `${firstOperand} ${currentOperation}`;
+    shouldResetScreen = true;
+}
+
+function evaluate() {
+    if (currentOperation === null || shouldResetScreen) return
+    if (currentOperation === '÷' && currentOperationScreen.textContent === '0') {
+        alert("You can't divide by 0!")
+        return
+    }
+    secondOperand = currentOperationScreen.textContent
+    currentOperationScreen.textContent = roundResult(
+        operate(currentOperation, firstOperand, secondOperand)
+    )
+    lastOperationScreen.textContent = `${firstOperand} ${currentOperation} ${secondOperand} =`
+    currentOperation = null
+}
+
+
+function roundResult(number) {
+    return Math.round(number * 1000) / 1000;
+}
+
+function handleKeyboardInput(e) {
+    if (e.key >= 0 && e.key <= 9) appendNumber(e.key)
+    if (e.key === '.') appendPoint()
+    if (e.key === '=' || e.key === 'Enter') evaluate()
+    if (e.key === 'Backspace') deleteNumber()
+    if (e.key === 'Escape') clear()
+    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/')
+        setOperation(convertOperator(e.key))
+}
+
+function convertOperator(keyboardOperator) {
+    if (keyboardOperator === '/') return '÷'
+    if (keyboardOperator === '*') return '×'
+    if (keyboardOperator === '-') return '−'
+    if (keyboardOperator === '+') return '+'
+}
+
+
 // Build the functions of add, subtract, multiply, and divide using the arithmetic operators.
+// Function to add two numbers.
 function add(a, b) {
     return a + b;
 }
+
+// Function to subtract two numbers.
 function subtract(a, b) {
     return a - b;
 }
+
+// Function to multiply two numbers.
 function multiply(a, b) {
     return a * b;
 }
+
+// Function to divide two numbers.
 function divide(a, b) {
     return a / b;
 }
@@ -15,14 +134,20 @@ function divide(a, b) {
 
 // Create a function called Operate that takes an operator and 2 numbers and then calls one of the above functions on the Numbers
 function operate(operator, a, b) {
-    if (operator === '+') {
-        return add(a, b);
-    } else if (operator === '-') {
-        return subtract(a, b);
-    } else if (operator === '*') {
-        return multiply(a, b);
-    } else if (operator === '/') {
-        return divide(a, b);
+    a = Number(a)
+    b = Number(b)
+    switch (operator) {
+        case '+':
+            return add(a, b)
+        case '−':
+            return substract(a, b)
+        case '×':
+            return multiply(a, b)
+        case '÷':
+            if (b === 0) return null
+            else return divide(a, b)
+        default:
+            return null
     }
 }
 

@@ -3,7 +3,7 @@ Welcome to my JavaScript Calculator project, the final project of the "Fundament
 
 ### Live Demo
 
-See the live demo of the calculator here <a href="" target="blank"><a/>.
+See the live demo of the calculator <a href="https://jeancsinisterra.github.io/calculatorFinalProjectTOP/" target="blank">here<a/>.
 
 ### Features
 
